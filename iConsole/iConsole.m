@@ -109,7 +109,7 @@ void exceptionHandler(NSException *exception)
 - (void)setConsoleText
 {
 	NSString *text = _infoString;
-	int touches = (TARGET_IPHONE_SIMULATOR ? _simulatorTouchesToShow: _deviceTouchesToShow);
+	NSInteger touches = (TARGET_IPHONE_SIMULATOR ? _simulatorTouchesToShow: _deviceTouchesToShow);
 	if (touches > 0 && touches < 11)
 	{
 		text = [text stringByAppendingFormat:@"\nSwipe down with %i finger%@ to hide console", touches, (touches != 1)? @"s": @""];
