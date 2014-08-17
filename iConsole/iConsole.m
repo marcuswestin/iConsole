@@ -192,6 +192,7 @@ void exceptionHandler(NSException *exception)
         case CMDTypeFind: {
             if (_delegate) {
                 _inputField.placeholder = @"Find";
+                [_inputField becomeFirstResponder];
             }
         }
             break;
