@@ -601,6 +601,7 @@ void exceptionHandler(NSException *exception)
 	_consoleView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _consoleView.primaryHighlightColor = [UIColor colorWithRed:0.93 green:0.89 blue:0 alpha:.8];
     _consoleView.secondaryHighlightColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:.75];
+    _consoleView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
 	[self setConsoleText];
 	[self.view addSubview:_consoleView];
 	
