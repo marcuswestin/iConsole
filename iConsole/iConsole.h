@@ -107,6 +107,7 @@ iConsoleLogLevel;
 
 + (void)show;
 + (void)hide;
+- (void)commandAction;
 
 @end
 
