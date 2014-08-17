@@ -55,7 +55,7 @@
     } else if ([item.title isEqualToString:@"Version"]) {
         self.cmdType = CMDTypeVersion;
     }
-    [[iConsole sharedConsole] performSelector:@selector(commandAction)];
+    [[iConsole sharedConsole] performSelector:@selector(commandAction:)];
 }
 
 - (void)setOpenCMD:(BOOL)openCMD
