@@ -426,20 +426,11 @@ void exceptionHandler(NSException *exception)
 #pragma mark -
 #pragma mark UITextFieldDelegate methods
 
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-    switch ([iConsoleManager sharediConsoleManager].cmdType) {
-        case CMDTypeFind:
-            [_consoleView resetSearch];
-            break;
-            
-        default:
-            break;
-    }
-}
-
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
+    if ([NSDate date].timeIntervalSinceReferenceDate - didJustClearDate.timeIntervalSinceReferenceDate < .3) {
+        return NO;
+    }
     [self textFieldDidChange:textField];
     return YES;
 }
@@ -450,8 +441,10 @@ void exceptionHandler(NSException *exception)
 	return YES;
 }
 
+static NSDate* didJustClearDate;
 - (BOOL)textFieldShouldClear:(UITextField *)textField
 {
+    didJustClearDate = [NSDate date];
 	return YES;
 }
 
@@ -628,7 +621,8 @@ void exceptionHandler(NSException *exception)
 		_inputField.autocorrectionType = UITextAutocorrectionTypeNo;
 		_inputField.returnKeyType = UIReturnKeyDone;
 		_inputField.enablesReturnKeyAutomatically = NO;
-		_inputField.clearButtonMode = UITextFieldViewModeWhileEditing;
+		_inputField.clearButtonMode = UITextFieldViewModeAlways;
+        _inputField.keyboardAppearance = UIKeyboardAppearanceDark;
 		_inputField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 		_inputField.placeholder = _inputPlaceholderString;
 		_inputField.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
