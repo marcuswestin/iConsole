@@ -35,6 +35,9 @@
         }),({
             QBPopupMenuItem *item2 = [QBPopupMenuItem itemWithTitle:@"Version" target:self action:@selector(commandAction:)];
             item2;
+        }),({
+            QBPopupMenuItem *item3 = [QBPopupMenuItem itemWithTitle:@"Close" target:self action:@selector(commandAction:)];
+            item3;
         }),nil];
         
         self.commandMenu = ({
@@ -54,6 +57,9 @@
         self.cmdType = CMDTypeFind;
     } else if ([item.title isEqualToString:@"Version"]) {
         self.cmdType = CMDTypeVersion;
+    } else if ([item.title isEqualToString:@"Close"]) {
+        [iConsole hide];
+        return;
     }
     [[iConsole sharedConsole] performSelector:@selector(commandAction)];
 }
