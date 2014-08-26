@@ -689,7 +689,7 @@ static NSDate* didJustClearDate;
 
 + (void)log:(NSString *)format arguments:(va_list)argList
 {	
-	NSLogv(format, argList);
+//	NSLogv(format, argList);
 	
     if ([self sharedConsole].enabled)
     {
