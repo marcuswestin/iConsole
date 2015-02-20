@@ -66,6 +66,8 @@ iConsoleLogLevel;
 
 @interface iConsole : UIViewController
 
+@property (nonatomic, copy) NSDictionary* additionalMenuOptions;
+
 //enabled/disable console features
 
 @property (nonatomic, assign) BOOL enabled;
@@ -108,6 +110,9 @@ iConsoleLogLevel;
 + (void)show;
 + (void)hide;
 - (void)commandAction;
+
++ (void)setAdditionalMenuOptions:(NSDictionary*)additionalMenuOptions;
++ (void)sendEmail;
 
 @end
 

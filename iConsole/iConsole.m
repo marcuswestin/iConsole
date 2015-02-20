@@ -165,13 +165,17 @@ void exceptionHandler(NSException *exception)
 - (void)infoAction
 {
 	[self findAndResignFirstResponder:[self mainWindow]];
-	
-	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@""
+
+	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Menu"
                                                        delegate:self
                                               cancelButtonTitle:@"Cancel"
                                          destructiveButtonTitle:@"Clear Log"
                                               otherButtonTitles:@"Send by Email", nil];
-
+    NSDictionary* additionalMenuOptions = [iConsole sharedConsole].additionalMenuOptions;
+    for (id title in additionalMenuOptions) {
+        [sheet addButtonWithTitle:title];
+    }
+    
 	sheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
     sheet.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [sheet setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -482,21 +486,37 @@ static NSDate* didJustClearDate;
     return CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, CFSTR("!*'\"();:@&=+$,/?%#[]% "), kCFStringEncodingUTF8));
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-	if (buttonIndex == actionSheet.destructiveButtonIndex)
-	{
-		[iConsole clear];
-	}
-	else if (buttonIndex != actionSheet.cancelButtonIndex)
-	{
-        NSString *URLSafeName = [self URLEncodedString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-        NSString *URLSafeLog = [self URLEncodedString:[_log componentsJoinedByString:@"\n"]];
-        NSMutableString *URLString = [NSMutableString stringWithFormat:@"mailto:%@?subject=%@%%20Console%%20Log&body=%@",
-                                      _logSubmissionEmail ?: @"", URLSafeName, URLSafeLog];
++ (void)sendEmail {
+    iConsole* instance = [iConsole sharedConsole];
+    NSString *URLSafeName = [instance URLEncodedString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+    NSString *URLSafeLog = [instance URLEncodedString:[instance.log componentsJoinedByString:@"\n"]];
+    NSString *URLString = [NSString stringWithFormat:@"mailto:%@?subject=%@%%20Console%%20Log&body=%@",
+                           instance.logSubmissionEmail ?: @"", URLSafeName, URLSafeLog];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+}
 
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
-	}
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSMutableArray* actions = [NSMutableArray array];
+    [actions addObject:^{
+        // 0 = clear console
+        [iConsole clear];
+    }];
+    [actions addObject:^{
+        // 1 = send email
+        [iConsole sendEmail];
+    }];
+    [actions addObject:^{
+        // 2 = cancel
+        [iConsole hide];
+    }];
+    
+    NSDictionary* additionalMenuOptions = [iConsole sharedConsole].additionalMenuOptions;
+    for (id title in additionalMenuOptions) {
+        [actions addObject:additionalMenuOptions[title]];
+    }
+
+    void (^fn)() = actions[buttonIndex];
+    fn();
 }
 
 
@@ -545,6 +565,7 @@ static NSDate* didJustClearDate;
         self.backgroundColor = [UIColor blackColor];
         self.textColor = [UIColor whiteColor];
         self.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+        self.additionalMenuOptions = @{};
         
         [[NSUserDefaults standardUserDefaults] synchronize];
         self.log = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kiConsoleLog]];
